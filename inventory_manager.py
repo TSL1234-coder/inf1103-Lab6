@@ -139,7 +139,6 @@ def main():
             search_product_input(inventory)
         elif choice == '5':
             save_inventory_ui(inventory)
-            print("Inventory saved successfully!")  
         elif choice == '6':
             save_inventory_ui(inventory)
             print("\nThank you for using the Inventory Management System. Goodbye!")
