@@ -6,7 +6,7 @@
 
 from product import Product
 from inventory import Inventory
-
+from file_handler import save_inventory, load_inventory, INVENTORY_FILE
 
 
 # ======================================================================
@@ -55,11 +55,11 @@ def update_product_stock_input(inventory):
         print(f"Product with ID {product_id} not found.")
         return
 
-    new_stock = int(input(f"Enter new stock for {product.name}: "))
+    new_stock = int(input(f"Enter new stock for {product.get_name()}: "))
     if product.update_stock(new_stock):
-        print(f"Stock for {product.name} updated to {new_stock}.")
+        print(f"Stock for {product.get_name()} updated to {new_stock}.")
     else:
-        print(f"Failed to update stock for {product.name}. Please check the input value.")
+        print(f"Failed to update stock for {product.get_name()}. Please check the input value.")
 
 
 def search_product_input(inventory):
@@ -67,12 +67,37 @@ def search_product_input(inventory):
 
     product = inventory.search_product(product_id)
     if product is None:
-        print(f"Product with ID {product_id} not found.")
+        print(f"\nProduct with ID {product_id} not found.")
     else:
-        print("Product found:")
+        print("\nProduct found:")
         product.display_product_info()
 
 
+
+def save_inventory_ui(inventory):
+    result = save_inventory(inventory)
+
+    if result:
+        print("\nInventory saved successfully!")
+    else:
+        print("\nError saving inventory!")
+
+
+
+def setup_inventory(inventory):
+    result = load_inventory(inventory)
+
+    if result == "loaded":
+        print("\nInventory loaded successfully!")
+    elif result == "not_found":
+        print(f"\nInventory file '{INVENTORY_FILE}' not found. Starting with an empty inventory.")
+
+        for product in create_default_products():
+            inventory.add_product(product)
+        save_inventory(inventory)
+        print("\nA new inventory file has been created with default products.")
+    else:
+        print("\nError loading inventory!")
 
 
 
@@ -90,6 +115,8 @@ def main():
     # Create an instance of Inventory
     inventory = Inventory() 
 
+    # Load inventory from file if it exists
+    setup_inventory(inventory)  
 
     # Populate inventory with default products
     for product in create_default_products():
@@ -111,8 +138,10 @@ def main():
         elif choice == '4':
             search_product_input(inventory)
         elif choice == '5':
+            save_inventory_ui(inventory)
             print("Inventory saved successfully!")  
         elif choice == '6':
+            save_inventory_ui(inventory)
             print("\nThank you for using the Inventory Management System. Goodbye!")
             exit_program = True
         else:
